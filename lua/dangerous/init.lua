@@ -7,7 +7,11 @@ local M = {}
 function M.setup(opts)
 	opts = opts or {}
 
+	---@type integer timeout
 	local timeout = opts.timeout or (60 * 1000)
+
+	---@type boolean check plugin status
+	local isActive = true
 
 	local timer = vim.uv.new_timer()
 	local function clock()
@@ -15,6 +19,7 @@ function M.setup(opts)
 			timer:stop()
 			timer:start(timeout, 0, function()
 				vim.notify("timeout", vim.log.levels.ERROR)
+				isActive = false
 			end)
 		end
 	end
@@ -22,7 +27,9 @@ function M.setup(opts)
 		clock()
 		vim.api.nvim_buf_attach(0, false, {
 			on_lines = function()
-				clock()
+				if isActive then
+					clock()
+				end
 			end,
 		})
 	end, {})
@@ -30,6 +37,7 @@ function M.setup(opts)
 	vim.api.nvim_create_user_command("DangerStop", function()
 		if timer ~= nil then
 			timer:stop()
+			isActive = false
 			vim.notify("DangerStop", vim.log.levels.INFO)
 		end
 	end, {})
