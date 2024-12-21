@@ -1,9 +1,9 @@
 local M = {}
 
 ---plugin init
----@class opt
+---@class config
 ---@field timeout integer timeout for ending
----@param opts opt
+---@param opts config
 function M.setup(opts)
 	opts = opts or {}
 
